@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>BUET Chase Game</title>
+<style>
+    body {
+        margin: 0;
+        overflow: hidden;
+        background: linear-gradient(#87CEEB, #ffffff);
+        font-family: Arial, sans-serif;
+    }
+
+    #gameArea {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        background: url('https://images.unsplash.com/photo-1523580846011-d3a5bc25702b') center/cover;
+    }
+
+    /* Girl */
+    #girl {
+        position: absolute;
+        bottom: 60px;
+        left: 100px;
+        width: 60px;
+        height: 60px;
+        background: pink;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 60px;
+        font-size: 12px;
+    }
+
+    /* Boy */
+    #boy {
+        position: absolute;
+        bottom: 60px;
+        left: 20px;
+        width: 60px;
+        height: 60px;
+        background: black;
+        color: white;
+        border-radius: 50%;
+        text-align: center;
+        font-size: 10px;
+        line-height: 60px;
+    }
+
+    /* Ground */
+    #ground {
+        position: absolute;
+        bottom: 0;
+        width: 200%;
+        height: 60px;
+        background: #3b3b3b;
+        animation: moveGround 2s linear infinite;
+    }
+
+    @keyframes moveGround {
+        from { transform: translateX(0); }
+        to { transform: translateX(-50%); }
+    }
+
+    #gameOver {
+        position: absolute;
+        top: 40%;
+        width: 100%;
+        text-align: center;
+        font-size: 40px;
+        color: red;
+        display: none;
+    }
+
+    #dialogue {
+        position: absolute;
+        top: 20px;
+        width: 100%;
+        text-align: center;
+        font-size: 20px;
+        color: white;
+        text-shadow: 2px 2px 5px black;
+    }
+</style>
+</head>
+<body>
+
+<div id="gameArea">
+    <div id="dialogue">Boy: "Stop BUETian!" | Girl: "Get your chance if you can!"</div>
+
+    <div id="girl">👩‍🧕</div>
+    <div id="boy">🧑‍🦱</div>
+
+    <div id="ground"></div>
+
+    <div id="gameOver">GAME OVER</div>
+</div>
+
+<script>
+let girl = document.getElementById("girl");
+let boy = document.getElementById("boy");
+let gameOverText = document.getElementById("gameOver");
+
+let girlY = 0;
+let isJumping = false;
+let gravity = 2;
+let velocity = 0;
+
+let boyX = 20;
+let speed = 3;
+
+function jump() {
+    if (!isJumping) {
+        velocity = -20;
+        isJumping = true;
+    }
+}
+
+document.addEventListener("keydown", function(e) {
+    if (e.code === "Space") {
+        jump();
+    }
+});
+
+function update() {
+    // Girl jump physics
+    girlY += velocity;
+    velocity += gravity;
+
+    if (girlY >= 0) {
+        girlY = 0;
+        isJumping = false;
+    }
+
+    girl.style.bottom = (60 + girlY) + "px";
+
+    // Boy chasing
+    boyX += speed;
+    boy.style.left = boyX + "px";
+
+    // Reset chase loop feel
+    if (boyX > window.innerWidth) {
+        boyX = 20;
+    }
+
+    // Collision detection
+    let girlRect = girl.getBoundingClientRect();
+    let boyRect = boy.getBoundingClientRect();
+
+    if (
+        boyRect.left < girlRect.right &&
+        boyRect.right > girlRect.left &&
+        boyRect.top < girlRect.bottom &&
+        boyRect.bottom > girlRect.top
+    ) {
+        gameOverText.style.display = "block";
+        speed = 0;
+    }
+
+    requestAnimationFrame(update);
+}
+
+update();
+</script>
+
+</body>
+</html>
